@@ -68,11 +68,5 @@ Mikasa/
 └── contracts/           # Contracts/interfaces (planned)
 ```
 
-## Modules
-
-### LLM Module
-- `api.py`: Implements the NVIDIA API client for cloud-based inference
-
-
 
 
