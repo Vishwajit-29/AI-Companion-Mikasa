@@ -7,7 +7,7 @@ A modular AI assistant with support for both text and voice input.
 
 - Text-based chat using NVIDIA's Nemotron-3 Nano 30B model
 - Modular architecture for easy extension
-- Voice input support (planned)
+
 
 ## Prerequisites
 
@@ -72,7 +72,7 @@ Mikasa/
 
 ### LLM Module
 - `api.py`: Implements the NVIDIA API client for cloud-based inference
-- `local.py`: Will implement local LLM support (planned)
+
 
 
 
