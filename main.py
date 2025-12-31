@@ -7,31 +7,68 @@ Handles sequential execution and modular code handling.
 import os
 import sys
 
-from dotenv import load_dotenv
+# Add the project root and tts directory to the Python path
+project_root = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(project_root)
+sys.path.append(os.path.join(project_root, "tts"))
 
-# Add the project root to the Python path
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
+import asyncio
+import os
+import sys
+import threading
+import time
 
 from llm.api import NvidiaChatClient
+from tts.tts_client import TTSClient
 
 
 def text_chat_mode():
-    """Handle text-based chat interaction"""
-    print("\n=== Text Chat Mode ===")
-    print("Type 'quit', 'exit', or 'bye' to return to main menu\n")
+    """Handles text-based chat interaction with integrated TTS."""
+    print("\n=== Text Chat Mode (TTS Enabled) ===")
+    print("Type 'quit', 'exit', or 'bye' to return to the main menu.")
+    print("While the AI is speaking, press ENTER to interrupt.")
+    print("-" * 40)
+
+    tts_client = None
+    client = None
+    exit_event = threading.Event()
 
     try:
-        client = NvidiaChatClient()
-        while True:
-            user_input = input("You: ")
-            if user_input.lower() in ["quit", "exit", "bye"]:
-                break
-            client.chat_streaming(user_input)
+        # Initialize clients
+        tts_client = TTSClient()
+        client = NvidiaChatClient(tts_client=tts_client)
+
+        # --- Input and Interruption Handling ---
+        def user_input_handler():
+            while not exit_event.is_set():
+                user_input = input("You: ")
+                if user_input.lower() in ["quit", "exit", "bye"]:
+                    exit_event.set()
+                    break
+
+                if tts_client and tts_client.audio_player.is_active():
+                    print("\n[User interrupted. Stopping audio...]")
+                    tts_client.interrupt()
+
+                asyncio.run(client.chat_streaming(user_input))
+
+        input_thread = threading.Thread(target=user_input_handler, daemon=True)
+        input_thread.start()
+
+        # Keep the main thread alive
+        while not exit_event.is_set():
+            time.sleep(0.1)
+
     except KeyboardInterrupt:
-        print("\nReturning to main menu...")
+        print("\nReturning to the main menu...")
     except Exception as e:
-        print(f"Error in text chat mode: {e}")
+        print(f"An error occurred in text chat mode: {e}")
+    finally:
+        # Signal the input thread to exit and clean up resources
+        exit_event.set()
+        if tts_client:
+            tts_client.shutdown()
+        print("Exited text chat mode.")
 
 
 def voice_chat_mode():

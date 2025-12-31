@@ -70,3 +70,12 @@ Mikasa/
 
 
 
+## Creating venv
+
+Run in terminal:
+```terminal
+python -m venv myenv
+```
+```terminal
+myenv\Scripts\activate.bat
+```
