@@ -33,6 +33,17 @@ A modular AI assistant with support for both text and voice input.
      cp .env.example .env
      ```
    - Edit `.env` and add your NVIDIA API key
+  
+
+## Creating venv
+
+Run in terminal:
+```terminal
+python -m venv myenv
+```
+```terminal
+myenv\Scripts\activate.bat
+```
 
 ## Usage
 
@@ -70,12 +81,3 @@ Mikasa/
 
 
 
-## Creating venv
-
-Run in terminal:
-```terminal
-python -m venv myenv
-```
-```terminal
-myenv\Scripts\activate.bat
-```
